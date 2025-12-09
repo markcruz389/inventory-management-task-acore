@@ -17,6 +17,7 @@ import {
 import InventoryIcon from "@mui/icons-material/Inventory";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
 import CategoryIcon from "@mui/icons-material/Category";
+import { formatNumber, formatCurrency } from "@/_utils";
 
 export const InventoryOverview = ({
   products,
@@ -68,7 +69,7 @@ export const InventoryOverview = ({
                   fontWeight: "bold",
                 }}
               >
-                {products.length}
+                {formatNumber(products.length)}
               </Typography>
             </CardContent>
           </Card>
@@ -104,7 +105,7 @@ export const InventoryOverview = ({
                   fontWeight: "bold",
                 }}
               >
-                {warehouses.length}
+                {formatNumber(warehouses.length)}
               </Typography>
             </CardContent>
           </Card>
@@ -140,7 +141,7 @@ export const InventoryOverview = ({
                   fontWeight: "bold",
                 }}
               >
-                ${totalValue.toFixed(2)}
+                {formatCurrency(totalValue)}
               </Typography>
             </CardContent>
           </Card>
@@ -270,7 +271,7 @@ export const InventoryOverview = ({
                     whiteSpace: "nowrap",
                   }}
                 >
-                  {item.totalQuantity}
+                  {formatNumber(item.totalQuantity)}
                 </TableCell>
                 <TableCell
                   align="right"
@@ -280,7 +281,7 @@ export const InventoryOverview = ({
                     whiteSpace: "nowrap",
                   }}
                 >
-                  {item.reorderPoint}
+                  {formatNumber(item.reorderPoint)}
                 </TableCell>
                 <TableCell
                   sx={{
