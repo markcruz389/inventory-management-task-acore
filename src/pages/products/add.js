@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import { useState } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import {
   Container,
   Typography,
@@ -10,19 +10,22 @@ import {
   Paper,
   AppBar,
   Toolbar,
-} from '@mui/material';
-import InventoryIcon from '@mui/icons-material/Inventory';
+  Alert,
+} from "@mui/material";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import { useCreateProduct } from "@/_hooks/use-create-product";
 
 export default function AddProduct() {
   const [product, setProduct] = useState({
-    sku: '',
-    name: '',
-    category: '',
-    unitCost: '',
-    reorderPoint: '',
+    sku: "",
+    name: "",
+    category: "",
+    unitCost: "",
+    reorderPoint: "",
   });
 
   const router = useRouter();
+  const createProduct = useCreateProduct();
 
   const handleChange = (e) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
@@ -30,18 +33,18 @@ export default function AddProduct() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/products', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    createProduct.mutate(
+      {
         ...product,
         unitCost: parseFloat(product.unitCost),
         reorderPoint: parseInt(product.reorderPoint),
-      }),
-    });
-    if (res.ok) {
-      router.push('/products');
-    }
+      },
+      {
+        onSuccess: () => {
+          router.push("/products");
+        },
+      }
+    );
   };
 
   return (
@@ -72,7 +75,19 @@ export default function AddProduct() {
           <Typography variant="h4" component="h1" gutterBottom>
             Add New Product
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
+
+          {createProduct.error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {createProduct.error.message}
+            </Alert>
+          )}
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 2 }}
+          >
             <TextField
               margin="normal"
               required
@@ -107,7 +122,7 @@ export default function AddProduct() {
               label="Unit Cost"
               name="unitCost"
               type="number"
-              inputProps={{ step: '0.01', min: '0' }}
+              inputProps={{ step: "0.01", min: "0" }}
               value={product.unitCost}
               onChange={handleChange}
             />
@@ -118,18 +133,19 @@ export default function AddProduct() {
               label="Reorder Point"
               name="reorderPoint"
               type="number"
-              inputProps={{ min: '0' }}
+              inputProps={{ min: "0" }}
               value={product.reorderPoint}
               onChange={handleChange}
             />
-            <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+            <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 color="primary"
+                disabled={createProduct.isPending}
               >
-                Add Product
+                {createProduct.isPending ? "Adding..." : "Add Product"}
               </Button>
               <Button
                 fullWidth
@@ -146,4 +162,3 @@ export default function AddProduct() {
     </>
   );
 }
-

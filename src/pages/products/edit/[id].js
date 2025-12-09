@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import {
   Container,
   Typography,
@@ -11,32 +11,32 @@ import {
   AppBar,
   Toolbar,
   CircularProgress,
-} from '@mui/material';
-import InventoryIcon from '@mui/icons-material/Inventory';
+  Alert,
+} from "@mui/material";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import { useProduct } from "@/_hooks/use-product";
+import { useUpdateProduct } from "@/_hooks/use-update-product";
 
 export default function EditProduct() {
-  const [product, setProduct] = useState({
-    sku: '',
-    name: '',
-    category: '',
-    unitCost: '',
-    reorderPoint: '',
-  });
-  const [loading, setLoading] = useState(true);
-
   const router = useRouter();
   const { id } = router.query;
 
+  const { data: productData, isLoading, error } = useProduct(id);
+  const updateProduct = useUpdateProduct();
+
+  const [product, setProduct] = useState({
+    sku: "",
+    name: "",
+    category: "",
+    unitCost: "",
+    reorderPoint: "",
+  });
+
   useEffect(() => {
-    if (id) {
-      fetch(`/api/products/${id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setProduct(data);
-          setLoading(false);
-        });
+    if (productData) {
+      setProduct(productData);
     }
-  }, [id]);
+  }, [productData]);
 
   const handleChange = (e) => {
     setProduct({ ...product, [e.target.name]: e.target.value });
@@ -44,25 +44,41 @@ export default function EditProduct() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch(`/api/products/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    updateProduct.mutate(
+      {
+        id,
         ...product,
         unitCost: parseFloat(product.unitCost),
         reorderPoint: parseInt(product.reorderPoint),
-      }),
-    });
-    if (res.ok) {
-      router.push('/products');
-    }
+      },
+      {
+        onSuccess: () => {
+          router.push("/products");
+        },
+      }
+    );
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
         <CircularProgress />
       </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container sx={{ mt: 4 }}>
+        <Alert severity="error">Error loading product: {error.message}</Alert>
+      </Container>
     );
   }
 
@@ -94,7 +110,19 @@ export default function EditProduct() {
           <Typography variant="h4" component="h1" gutterBottom>
             Edit Product
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
+
+          {updateProduct.error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {updateProduct.error.message}
+            </Alert>
+          )}
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 2 }}
+          >
             <TextField
               margin="normal"
               required
@@ -129,7 +157,7 @@ export default function EditProduct() {
               label="Unit Cost"
               name="unitCost"
               type="number"
-              inputProps={{ step: '0.01', min: '0' }}
+              inputProps={{ step: "0.01", min: "0" }}
               value={product.unitCost}
               onChange={handleChange}
             />
@@ -140,18 +168,19 @@ export default function EditProduct() {
               label="Reorder Point"
               name="reorderPoint"
               type="number"
-              inputProps={{ min: '0' }}
+              inputProps={{ min: "0" }}
               value={product.reorderPoint}
               onChange={handleChange}
             />
-            <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+            <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 color="primary"
+                disabled={updateProduct.isPending}
               >
-                Update Product
+                {updateProduct.isPending ? "Updating..." : "Update Product"}
               </Button>
               <Button
                 fullWidth
@@ -168,4 +197,3 @@ export default function EditProduct() {
     </>
   );
 }
-

@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import { useState } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import {
   Container,
   Typography,
@@ -10,17 +10,20 @@ import {
   Paper,
   AppBar,
   Toolbar,
-} from '@mui/material';
-import InventoryIcon from '@mui/icons-material/Inventory';
+  Alert,
+} from "@mui/material";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import { useCreateWarehouse } from "@/_hooks/use-create-warehouse";
 
 export default function AddWarehouse() {
   const [warehouse, setWarehouse] = useState({
-    name: '',
-    location: '',
-    code: '',
+    name: "",
+    location: "",
+    code: "",
   });
 
   const router = useRouter();
+  const createWarehouse = useCreateWarehouse();
 
   const handleChange = (e) => {
     setWarehouse({ ...warehouse, [e.target.name]: e.target.value });
@@ -28,14 +31,11 @@ export default function AddWarehouse() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/warehouses', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(warehouse),
+    createWarehouse.mutate(warehouse, {
+      onSuccess: () => {
+        router.push("/warehouses");
+      },
     });
-    if (res.ok) {
-      router.push('/warehouses');
-    }
   };
 
   return (
@@ -66,7 +66,19 @@ export default function AddWarehouse() {
           <Typography variant="h4" component="h1" gutterBottom>
             Add New Warehouse
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
+
+          {createWarehouse.error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {createWarehouse.error.message}
+            </Alert>
+          )}
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 2 }}
+          >
             <TextField
               margin="normal"
               required
@@ -94,14 +106,15 @@ export default function AddWarehouse() {
               value={warehouse.location}
               onChange={handleChange}
             />
-            <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+            <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 color="primary"
+                disabled={createWarehouse.isPending}
               >
-                Add Warehouse
+                {createWarehouse.isPending ? "Adding..." : "Add Warehouse"}
               </Button>
               <Button
                 fullWidth
@@ -118,4 +131,3 @@ export default function AddWarehouse() {
     </>
   );
 }
-

@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import {
   Container,
   Typography,
@@ -11,30 +11,30 @@ import {
   AppBar,
   Toolbar,
   CircularProgress,
-} from '@mui/material';
-import InventoryIcon from '@mui/icons-material/Inventory';
+  Alert,
+} from "@mui/material";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import { useWarehouse } from "@/_hooks/use-warehouse";
+import { useUpdateWarehouse } from "@/_hooks/use-update-warehouse";
 
 export default function EditWarehouse() {
-  const [warehouse, setWarehouse] = useState({
-    name: '',
-    location: '',
-    code: '',
-  });
-  const [loading, setLoading] = useState(true);
-
   const router = useRouter();
   const { id } = router.query;
 
+  const { data: warehouseData, isLoading, error } = useWarehouse(id);
+  const updateWarehouse = useUpdateWarehouse();
+
+  const [warehouse, setWarehouse] = useState({
+    name: "",
+    location: "",
+    code: "",
+  });
+
   useEffect(() => {
-    if (id) {
-      fetch(`/api/warehouses/${id}`)
-        .then((res) => res.json())
-        .then((data) => {
-          setWarehouse(data);
-          setLoading(false);
-        });
+    if (warehouseData) {
+      setWarehouse(warehouseData);
     }
-  }, [id]);
+  }, [warehouseData]);
 
   const handleChange = (e) => {
     setWarehouse({ ...warehouse, [e.target.name]: e.target.value });
@@ -42,21 +42,36 @@ export default function EditWarehouse() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch(`/api/warehouses/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(warehouse),
-    });
-    if (res.ok) {
-      router.push('/warehouses');
-    }
+    updateWarehouse.mutate(
+      { id, ...warehouse },
+      {
+        onSuccess: () => {
+          router.push("/warehouses");
+        },
+      }
+    );
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh' }}>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
         <CircularProgress />
       </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container sx={{ mt: 4 }}>
+        <Alert severity="error">Error loading warehouse: {error.message}</Alert>
+      </Container>
     );
   }
 
@@ -88,7 +103,19 @@ export default function EditWarehouse() {
           <Typography variant="h4" component="h1" gutterBottom>
             Edit Warehouse
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
+
+          {updateWarehouse.error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {updateWarehouse.error.message}
+            </Alert>
+          )}
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 2 }}
+          >
             <TextField
               margin="normal"
               required
@@ -116,14 +143,15 @@ export default function EditWarehouse() {
               value={warehouse.location}
               onChange={handleChange}
             />
-            <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+            <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 color="primary"
+                disabled={updateWarehouse.isPending}
               >
-                Update Warehouse
+                {updateWarehouse.isPending ? "Updating..." : "Update Warehouse"}
               </Button>
               <Button
                 fullWidth
@@ -140,4 +168,3 @@ export default function EditWarehouse() {
     </>
   );
 }
-

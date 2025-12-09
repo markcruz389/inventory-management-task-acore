@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import { useState } from "react";
+import { useRouter } from "next/router";
+import Link from "next/link";
 import {
   Container,
   Typography,
@@ -11,29 +11,28 @@ import {
   AppBar,
   Toolbar,
   MenuItem,
-} from '@mui/material';
-import InventoryIcon from '@mui/icons-material/Inventory';
+  CircularProgress,
+  Alert,
+} from "@mui/material";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import { useCreateStock } from "@/_hooks/use-create-stock";
+import { useProducts } from "@/_hooks/use-products";
+import { useWarehouses } from "@/_hooks/use-warehouses";
 
 export default function AddStock() {
   const [stock, setStock] = useState({
-    productId: '',
-    warehouseId: '',
-    quantity: '',
+    productId: "",
+    warehouseId: "",
+    quantity: "",
   });
-  const [products, setProducts] = useState([]);
-  const [warehouses, setWarehouses] = useState([]);
 
   const router = useRouter();
+  const createStock = useCreateStock();
+  const { data: products = [], isLoading: productsLoading } = useProducts();
+  const { data: warehouses = [], isLoading: warehousesLoading } =
+    useWarehouses();
 
-  useEffect(() => {
-    Promise.all([
-      fetch('/api/products').then(res => res.json()),
-      fetch('/api/warehouses').then(res => res.json()),
-    ]).then(([productsData, warehousesData]) => {
-      setProducts(productsData);
-      setWarehouses(warehousesData);
-    });
-  }, []);
+  const isLoading = productsLoading || warehousesLoading;
 
   const handleChange = (e) => {
     setStock({ ...stock, [e.target.name]: e.target.value });
@@ -41,19 +40,34 @@ export default function AddStock() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = await fetch('/api/stock', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
+    createStock.mutate(
+      {
         productId: parseInt(stock.productId),
         warehouseId: parseInt(stock.warehouseId),
         quantity: parseInt(stock.quantity),
-      }),
-    });
-    if (res.ok) {
-      router.push('/stock');
-    }
+      },
+      {
+        onSuccess: () => {
+          router.push("/stock");
+        },
+      }
+    );
   };
+
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
 
   return (
     <>
@@ -83,7 +97,19 @@ export default function AddStock() {
           <Typography variant="h4" component="h1" gutterBottom>
             Add Stock Record
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
+
+          {createStock.error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {createStock.error.message}
+            </Alert>
+          )}
+
+          <Box
+            component="form"
+            onSubmit={handleSubmit}
+            noValidate
+            sx={{ mt: 2 }}
+          >
             <TextField
               margin="normal"
               required
@@ -123,18 +149,19 @@ export default function AddStock() {
               label="Quantity"
               name="quantity"
               type="number"
-              inputProps={{ min: '0' }}
+              inputProps={{ min: "0" }}
               value={stock.quantity}
               onChange={handleChange}
             />
-            <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+            <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
               <Button
                 type="submit"
                 fullWidth
                 variant="contained"
                 color="primary"
+                disabled={createStock.isPending}
               >
-                Add Stock
+                {createStock.isPending ? "Adding..." : "Add Stock"}
               </Button>
               <Button
                 fullWidth
@@ -151,4 +178,3 @@ export default function AddStock() {
     </>
   );
 }
-

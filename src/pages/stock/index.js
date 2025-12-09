@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useState } from "react";
+import Link from "next/link";
 import {
   Container,
   Typography,
@@ -20,42 +20,49 @@ import {
   AppBar,
   Toolbar,
   Box,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import InventoryIcon from '@mui/icons-material/Inventory';
+  CircularProgress,
+  Alert,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import { useStock } from "@/_hooks/use-stock";
+import { useDeleteStock } from "@/_hooks/use-delete-stock";
+import { useProducts } from "@/_hooks/use-products";
+import { useWarehouses } from "@/_hooks/use-warehouses";
 
 export default function Stock() {
-  const [stock, setStock] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [warehouses, setWarehouses] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedStockId, setSelectedStockId] = useState(null);
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const {
+    data: stock = [],
+    isLoading: stockLoading,
+    error: stockError,
+  } = useStock();
+  const {
+    data: products = [],
+    isLoading: productsLoading,
+    error: productsError,
+  } = useProducts();
+  const {
+    data: warehouses = [],
+    isLoading: warehousesLoading,
+    error: warehousesError,
+  } = useWarehouses();
+  const deleteStock = useDeleteStock();
 
-  const fetchData = () => {
-    Promise.all([
-      fetch('/api/stock').then(res => res.json()),
-      fetch('/api/products').then(res => res.json()),
-      fetch('/api/warehouses').then(res => res.json()),
-    ]).then(([stockData, productsData, warehousesData]) => {
-      setStock(stockData);
-      setProducts(productsData);
-      setWarehouses(warehousesData);
-    });
-  };
+  const isLoading = stockLoading || productsLoading || warehousesLoading;
+  const error = stockError || productsError || warehousesError;
 
   const getProductName = (productId) => {
-    const product = products.find(p => p.id === productId);
-    return product ? `${product.name} (${product.sku})` : 'Unknown';
+    const product = products.find((p) => p.id === productId);
+    return product ? `${product.name} (${product.sku})` : "Unknown";
   };
 
   const getWarehouseName = (warehouseId) => {
-    const warehouse = warehouses.find(w => w.id === warehouseId);
-    return warehouse ? `${warehouse.name} (${warehouse.code})` : 'Unknown';
+    const warehouse = warehouses.find((w) => w.id === warehouseId);
+    return warehouse ? `${warehouse.name} (${warehouse.code})` : "Unknown";
   };
 
   const handleClickOpen = (id) => {
@@ -69,19 +76,35 @@ export default function Stock() {
   };
 
   const handleDelete = async () => {
-    try {
-      const res = await fetch(`/api/stock/${selectedStockId}`, {
-        method: 'DELETE',
-      });
-
-      if (res.ok) {
-        setStock(stock.filter((item) => item.id !== selectedStockId));
+    deleteStock.mutate(selectedStockId, {
+      onSuccess: () => {
         handleClose();
-      }
-    } catch (error) {
-      console.error('Error deleting stock:', error);
-    }
+      },
+    });
   };
+
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container sx={{ mt: 4 }}>
+        <Alert severity="error">Error loading data: {error.message}</Alert>
+      </Container>
+    );
+  }
 
   return (
     <>
@@ -107,14 +130,21 @@ export default function Stock() {
       </AppBar>
 
       <Container sx={{ mt: 4, mb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
           <Typography variant="h4" component="h1">
             Stock Levels
           </Typography>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            component={Link} 
+          <Button
+            variant="contained"
+            color="primary"
+            component={Link}
             href="/stock/add"
           >
             Add Stock Record
@@ -125,10 +155,18 @@ export default function Stock() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell><strong>Product</strong></TableCell>
-                <TableCell><strong>Warehouse</strong></TableCell>
-                <TableCell align="right"><strong>Quantity</strong></TableCell>
-                <TableCell><strong>Actions</strong></TableCell>
+                <TableCell>
+                  <strong>Product</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Warehouse</strong>
+                </TableCell>
+                <TableCell align="right">
+                  <strong>Quantity</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Actions</strong>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -150,6 +188,7 @@ export default function Stock() {
                       color="error"
                       onClick={() => handleClickOpen(item.id)}
                       size="small"
+                      disabled={deleteStock.isPending}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -171,15 +210,21 @@ export default function Stock() {
           <DialogTitle>Delete Stock Record</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Are you sure you want to delete this stock record? This action cannot be undone.
+              Are you sure you want to delete this stock record? This action
+              cannot be undone.
             </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">
               Cancel
             </Button>
-            <Button onClick={handleDelete} color="error" autoFocus>
-              Delete
+            <Button
+              onClick={handleDelete}
+              color="error"
+              autoFocus
+              disabled={deleteStock.isPending}
+            >
+              {deleteStock.isPending ? "Deleting..." : "Delete"}
             </Button>
           </DialogActions>
         </Dialog>
@@ -187,4 +232,3 @@ export default function Stock() {
     </>
   );
 }
-

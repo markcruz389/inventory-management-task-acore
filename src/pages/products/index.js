@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useState } from "react";
+import Link from "next/link";
 import {
   Container,
   Typography,
@@ -20,25 +20,21 @@ import {
   AppBar,
   Toolbar,
   Box,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import InventoryIcon from '@mui/icons-material/Inventory';
+  CircularProgress,
+  Alert,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import { useProducts } from "@/_hooks/use-products";
+import { useDeleteProduct } from "@/_hooks/use-delete-product";
 
 export default function Products() {
-  const [products, setProducts] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedProductId, setSelectedProductId] = useState(null);
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = () => {
-    fetch('/api/products')
-      .then((res) => res.json())
-      .then((data) => setProducts(data));
-  };
+  const { data: products = [], isLoading, error } = useProducts();
+  const deleteProduct = useDeleteProduct();
 
   const handleClickOpen = (id) => {
     setSelectedProductId(id);
@@ -51,19 +47,35 @@ export default function Products() {
   };
 
   const handleDelete = async () => {
-    try {
-      const res = await fetch(`/api/products/${selectedProductId}`, {
-        method: 'DELETE',
-      });
-
-      if (res.ok) {
-        setProducts(products.filter((product) => product.id !== selectedProductId));
+    deleteProduct.mutate(selectedProductId, {
+      onSuccess: () => {
         handleClose();
-      }
-    } catch (error) {
-      console.error('Error deleting product:', error);
-    }
+      },
+    });
   };
+
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container sx={{ mt: 4 }}>
+        <Alert severity="error">Error loading products: {error.message}</Alert>
+      </Container>
+    );
+  }
 
   return (
     <>
@@ -89,14 +101,21 @@ export default function Products() {
       </AppBar>
 
       <Container sx={{ mt: 4, mb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
           <Typography variant="h4" component="h1">
             Products
           </Typography>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            component={Link} 
+          <Button
+            variant="contained"
+            color="primary"
+            component={Link}
             href="/products/add"
           >
             Add Product
@@ -107,12 +126,24 @@ export default function Products() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell><strong>SKU</strong></TableCell>
-                <TableCell><strong>Name</strong></TableCell>
-                <TableCell><strong>Category</strong></TableCell>
-                <TableCell align="right"><strong>Unit Cost</strong></TableCell>
-                <TableCell align="right"><strong>Reorder Point</strong></TableCell>
-                <TableCell><strong>Actions</strong></TableCell>
+                <TableCell>
+                  <strong>SKU</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Name</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Category</strong>
+                </TableCell>
+                <TableCell align="right">
+                  <strong>Unit Cost</strong>
+                </TableCell>
+                <TableCell align="right">
+                  <strong>Reorder Point</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Actions</strong>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -121,7 +152,9 @@ export default function Products() {
                   <TableCell>{product.sku}</TableCell>
                   <TableCell>{product.name}</TableCell>
                   <TableCell>{product.category}</TableCell>
-                  <TableCell align="right">${product.unitCost.toFixed(2)}</TableCell>
+                  <TableCell align="right">
+                    ${product.unitCost.toFixed(2)}
+                  </TableCell>
                   <TableCell align="right">{product.reorderPoint}</TableCell>
                   <TableCell>
                     <IconButton
@@ -136,6 +169,7 @@ export default function Products() {
                       color="error"
                       onClick={() => handleClickOpen(product.id)}
                       size="small"
+                      disabled={deleteProduct.isPending}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -157,15 +191,21 @@ export default function Products() {
           <DialogTitle>Delete Product</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Are you sure you want to delete this product? This action cannot be undone.
+              Are you sure you want to delete this product? This action cannot
+              be undone.
             </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">
               Cancel
             </Button>
-            <Button onClick={handleDelete} color="error" autoFocus>
-              Delete
+            <Button
+              onClick={handleDelete}
+              color="error"
+              autoFocus
+              disabled={deleteProduct.isPending}
+            >
+              {deleteProduct.isPending ? "Deleting..." : "Delete"}
             </Button>
           </DialogActions>
         </Dialog>
@@ -173,4 +213,3 @@ export default function Products() {
     </>
   );
 }
-

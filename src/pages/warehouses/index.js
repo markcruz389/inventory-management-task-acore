@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useState } from "react";
+import Link from "next/link";
 import {
   Container,
   Typography,
@@ -20,25 +20,21 @@ import {
   AppBar,
   Toolbar,
   Box,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import InventoryIcon from '@mui/icons-material/Inventory';
+  CircularProgress,
+  Alert,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import InventoryIcon from "@mui/icons-material/Inventory";
+import { useWarehouses } from "@/_hooks/use-warehouses";
+import { useDeleteWarehouse } from "@/_hooks/use-delete-warehouse";
 
 export default function Warehouses() {
-  const [warehouses, setWarehouses] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedWarehouseId, setSelectedWarehouseId] = useState(null);
 
-  useEffect(() => {
-    fetchWarehouses();
-  }, []);
-
-  const fetchWarehouses = () => {
-    fetch('/api/warehouses')
-      .then((res) => res.json())
-      .then((data) => setWarehouses(data));
-  };
+  const { data: warehouses = [], isLoading, error } = useWarehouses();
+  const deleteWarehouse = useDeleteWarehouse();
 
   const handleClickOpen = (id) => {
     setSelectedWarehouseId(id);
@@ -51,19 +47,37 @@ export default function Warehouses() {
   };
 
   const handleDelete = async () => {
-    try {
-      const res = await fetch(`/api/warehouses/${selectedWarehouseId}`, {
-        method: 'DELETE',
-      });
-
-      if (res.ok) {
-        setWarehouses(warehouses.filter((warehouse) => warehouse.id !== selectedWarehouseId));
+    deleteWarehouse.mutate(selectedWarehouseId, {
+      onSuccess: () => {
         handleClose();
-      }
-    } catch (error) {
-      console.error('Error deleting warehouse:', error);
-    }
+      },
+    });
   };
+
+  if (isLoading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container sx={{ mt: 4 }}>
+        <Alert severity="error">
+          Error loading warehouses: {error.message}
+        </Alert>
+      </Container>
+    );
+  }
 
   return (
     <>
@@ -89,14 +103,21 @@ export default function Warehouses() {
       </AppBar>
 
       <Container sx={{ mt: 4, mb: 4 }}>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 3,
+          }}
+        >
           <Typography variant="h4" component="h1">
             Warehouses
           </Typography>
-          <Button 
-            variant="contained" 
-            color="primary" 
-            component={Link} 
+          <Button
+            variant="contained"
+            color="primary"
+            component={Link}
             href="/warehouses/add"
           >
             Add Warehouse
@@ -107,10 +128,18 @@ export default function Warehouses() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell><strong>Code</strong></TableCell>
-                <TableCell><strong>Name</strong></TableCell>
-                <TableCell><strong>Location</strong></TableCell>
-                <TableCell><strong>Actions</strong></TableCell>
+                <TableCell>
+                  <strong>Code</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Name</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Location</strong>
+                </TableCell>
+                <TableCell>
+                  <strong>Actions</strong>
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -132,6 +161,7 @@ export default function Warehouses() {
                       color="error"
                       onClick={() => handleClickOpen(warehouse.id)}
                       size="small"
+                      disabled={deleteWarehouse.isPending}
                     >
                       <DeleteIcon />
                     </IconButton>
@@ -153,15 +183,21 @@ export default function Warehouses() {
           <DialogTitle>Delete Warehouse</DialogTitle>
           <DialogContent>
             <DialogContentText>
-              Are you sure you want to delete this warehouse? This action cannot be undone.
+              Are you sure you want to delete this warehouse? This action cannot
+              be undone.
             </DialogContentText>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="primary">
               Cancel
             </Button>
-            <Button onClick={handleDelete} color="error" autoFocus>
-              Delete
+            <Button
+              onClick={handleDelete}
+              color="error"
+              autoFocus
+              disabled={deleteWarehouse.isPending}
+            >
+              {deleteWarehouse.isPending ? "Deleting..." : "Delete"}
             </Button>
           </DialogActions>
         </Dialog>
@@ -169,4 +205,3 @@ export default function Warehouses() {
     </>
   );
 }
-
