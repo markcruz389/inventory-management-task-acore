@@ -47,36 +47,8 @@ export const DashboardSkeleton = () => {
         ))}
       </Grid>
 
-      {/* Charts Row 1: Pie Chart & Warehouse Stock Bar Chart */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={6}>
-          <ChartSkeleton />
-        </Grid>
-        <Grid item xs={12} md={6}>
-          <ChartSkeleton />
-        </Grid>
-      </Grid>
-
-      {/* Charts Row 2: Stock Level vs Reorder Point */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12}>
-          <ChartSkeleton />
-        </Grid>
-      </Grid>
-
-      {/* Charts Row 3: Product Distribution & Scatter Chart */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
-        <Grid item xs={12} md={7}>
-          <ChartSkeleton />
-        </Grid>
-        <Grid item xs={12} md={5}>
-          <ChartSkeleton />
-        </Grid>
-      </Grid>
-
       {/* Table Skeleton */}
-      <Skeleton variant="text" width={200} height={40} sx={{ mb: 2 }} />
-      <TableContainer component={Paper}>
+      <TableContainer component={Paper} sx={{ mb: 4 }}>
         <Table>
           <TableHead>
             <TableRow>
@@ -104,6 +76,33 @@ export const DashboardSkeleton = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {/* Charts Row 1: Pie Chart & Warehouse Stock Bar Chart */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} md={6}>
+          <ChartSkeleton />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <ChartSkeleton />
+        </Grid>
+      </Grid>
+
+      {/* Charts Row 2: Stock Level vs Reorder Point */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12}>
+          <ChartSkeleton />
+        </Grid>
+      </Grid>
+
+      {/* Charts Row 3: Product Distribution & Scatter Chart */}
+      <Grid container spacing={3} sx={{ mb: 4 }}>
+        <Grid item xs={12} md={7}>
+          <ChartSkeleton />
+        </Grid>
+        <Grid item xs={12} md={5}>
+          <ChartSkeleton />
+        </Grid>
+      </Grid>
     </>
   );
 };

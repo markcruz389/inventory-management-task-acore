@@ -1,11 +1,11 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { queryKeys } from './query-keys';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { queryKeys } from "./query-keys";
 
 const deleteStock = async (id) => {
   const res = await fetch(`/api/stock/${id}`, {
-    method: 'DELETE',
+    method: "DELETE",
   });
-  if (!res.ok) throw new Error('Failed to delete stock');
+  if (!res.ok) throw new Error("Failed to delete stock");
   return res.json();
 };
 
@@ -19,4 +19,3 @@ export const useDeleteStock = () => {
     },
   });
 };
-

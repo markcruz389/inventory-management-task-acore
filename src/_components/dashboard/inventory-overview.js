@@ -170,7 +170,7 @@ export const InventoryOverview = ({
           },
         }}
       >
-        <Table size="small" sx={{ minWidth: isMobile ? 800 : "auto" }}>
+        <Table sx={{ minWidth: isMobile ? 800 : "auto" }}>
           <TableHead>
             <TableRow>
               <TableCell
