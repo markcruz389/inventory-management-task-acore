@@ -12,9 +12,9 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
-import { useCreateStock } from "@/_hooks/use-create-stock";
-import { useProducts } from "@/_hooks/use-products";
-import { useWarehouses } from "@/_hooks/use-warehouses";
+import { useCreateStock } from "@/_hooks/mutations/use-create-stock";
+import { useProducts } from "@/_hooks/queries/use-products";
+import { useWarehouses } from "@/_hooks/queries/use-warehouses";
 
 export default function AddStock() {
   const [stock, setStock] = useState({

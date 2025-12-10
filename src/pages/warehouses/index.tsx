@@ -23,8 +23,8 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { useWarehouses } from "@/_hooks/use-warehouses";
-import { useDeleteWarehouse } from "@/_hooks/use-delete-warehouse";
+import { useWarehouses } from "@/_hooks/queries/use-warehouses";
+import { useDeleteWarehouse } from "@/_hooks/mutations/use-delete-warehouse";
 
 export default function Warehouses() {
   const [open, setOpen] = useState(false);

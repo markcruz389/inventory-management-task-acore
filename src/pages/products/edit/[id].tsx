@@ -11,8 +11,8 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
-import { useProduct } from "@/_hooks/use-product";
-import { useUpdateProduct } from "@/_hooks/use-update-product";
+import { useProduct } from "@/_hooks/queries/use-product";
+import { useUpdateProduct } from "@/_hooks/mutations/use-update-product";
 
 export default function EditProduct() {
   const router = useRouter();

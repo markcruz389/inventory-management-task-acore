@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { queryKeys } from "./query-keys";
+import { queryKeys } from "../cache-keys";
 
 const updateWarehouse = async ({
   id,

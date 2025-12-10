@@ -11,7 +11,7 @@ import {
   DialogContent,
   DialogActions,
 } from "@mui/material";
-import { useCreateTransfer } from "@/_hooks/use-create-transfer";
+import { useCreateTransfer } from "@/_hooks/mutations/use-create-transfer";
 
 type TransferFormData = {
   productId: string;

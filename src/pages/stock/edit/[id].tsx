@@ -12,10 +12,10 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
-import { useStockItem } from "@/_hooks/use-stock-item";
-import { useUpdateStock } from "@/_hooks/use-update-stock";
-import { useProducts } from "@/_hooks/use-products";
-import { useWarehouses } from "@/_hooks/use-warehouses";
+import { useStockItem } from "@/_hooks/queries/use-stock-item";
+import { useUpdateStock } from "@/_hooks/mutations/use-update-stock";
+import { useProducts } from "@/_hooks/queries/use-products";
+import { useWarehouses } from "@/_hooks/queries/use-warehouses";
 
 export default function EditStock() {
   const router = useRouter();

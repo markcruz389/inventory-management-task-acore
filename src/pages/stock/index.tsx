@@ -23,10 +23,10 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { useStock } from "@/_hooks/use-stock";
-import { useDeleteStock } from "@/_hooks/use-delete-stock";
-import { useProducts } from "@/_hooks/use-products";
-import { useWarehouses } from "@/_hooks/use-warehouses";
+import { useStock } from "@/_hooks/queries/use-stock";
+import { useDeleteStock } from "@/_hooks/mutations/use-delete-stock";
+import { useProducts } from "@/_hooks/queries/use-products";
+import { useWarehouses } from "@/_hooks/queries/use-warehouses";
 
 export default function Stock() {
   const [open, setOpen] = useState(false);

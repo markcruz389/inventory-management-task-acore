@@ -1,7 +1,7 @@
 import { Typography, Grid, Box } from "@mui/material";
-import { useProducts } from "@/_hooks/use-products";
-import { useWarehouses } from "@/_hooks/use-warehouses";
-import { useStock } from "@/_hooks/use-stock";
+import { useProducts } from "@/_hooks/queries/use-products";
+import { useWarehouses } from "@/_hooks/queries/use-warehouses";
+import { useStock } from "@/_hooks/queries/use-stock";
 import {
   DashboardSkeleton,
   CategoryValueChart,

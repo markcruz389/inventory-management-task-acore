@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { queryKeys } from "./query-keys";
+import { queryKeys } from "../cache-keys";
 import { transfersResponseSchema } from "@/_schemas";
 
 const fetchTransfers = async () => {

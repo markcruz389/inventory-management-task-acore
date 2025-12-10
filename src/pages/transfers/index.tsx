@@ -8,10 +8,10 @@ import {
   Snackbar,
   Alert,
 } from "@mui/material";
-import { useTransfers } from "@/_hooks/use-transfers";
-import { useProducts } from "@/_hooks/use-products";
-import { useWarehouses } from "@/_hooks/use-warehouses";
-import { useStock } from "@/_hooks/use-stock";
+import { useTransfers } from "@/_hooks/queries/use-transfers";
+import { useProducts } from "@/_hooks/queries/use-products";
+import { useWarehouses } from "@/_hooks/queries/use-warehouses";
+import { useStock } from "@/_hooks/queries/use-stock";
 import { TransferModal } from "@/_components/transfers/transfer-modal";
 import { TransfersTable } from "@/_components/transfers/transfers-table";
 import { TransfersTableSkeleton } from "@/_components/transfers/transfers-table-skeleton";

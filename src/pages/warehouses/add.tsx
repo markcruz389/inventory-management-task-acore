@@ -10,7 +10,7 @@ import {
   Paper,
   Alert,
 } from "@mui/material";
-import { useCreateWarehouse } from "@/_hooks/use-create-warehouse";
+import { useCreateWarehouse } from "@/_hooks/mutations/use-create-warehouse";
 
 export default function AddWarehouse() {
   const [warehouse, setWarehouse] = useState({

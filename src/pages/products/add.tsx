@@ -10,7 +10,7 @@ import {
   Paper,
   Alert,
 } from "@mui/material";
-import { useCreateProduct } from "@/_hooks/use-create-product";
+import { useCreateProduct } from "@/_hooks/mutations/use-create-product";
 
 export default function AddProduct() {
   const [product, setProduct] = useState({

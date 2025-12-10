@@ -23,8 +23,8 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { useProducts } from "@/_hooks/use-products";
-import { useDeleteProduct } from "@/_hooks/use-delete-product";
+import { useProducts } from "@/_hooks/queries/use-products";
+import { useDeleteProduct } from "@/_hooks/mutations/use-delete-product";
 
 export default function Products() {
   const [open, setOpen] = useState(false);

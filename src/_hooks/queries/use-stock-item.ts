@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { queryKeys } from "./query-keys";
+import { queryKeys } from "../cache-keys";
 
 const fetchStockById = async (id: string | number) => {
   const res = await fetch(`/api/stock/${id}`);

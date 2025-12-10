@@ -11,8 +11,8 @@ import {
   CircularProgress,
   Alert,
 } from "@mui/material";
-import { useWarehouse } from "@/_hooks/use-warehouse";
-import { useUpdateWarehouse } from "@/_hooks/use-update-warehouse";
+import { useWarehouse } from "@/_hooks/queries/use-warehouse";
+import { useUpdateWarehouse } from "@/_hooks/mutations/use-update-warehouse";
 
 export default function EditWarehouse() {
   const router = useRouter();
