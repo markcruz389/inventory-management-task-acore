@@ -1,5 +1,6 @@
 import { Card, CardContent, Typography, Box } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { tealChartColors } from "@/_theme/theme";
 
 interface Product {
@@ -23,11 +24,66 @@ export const ProductDistributionChart = ({
   products,
   warehouses,
   stock,
+  productsError,
+  warehousesError,
+  stockError,
 }: {
   products: Product[];
   warehouses: Warehouse[];
   stock: StockItem[];
+  productsError?: Error | null;
+  warehousesError?: Error | null;
+  stockError?: Error | null;
 }) => {
+  if (productsError || warehousesError || stockError) {
+    return (
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Product Distribution Across Warehouses
+          </Typography>
+          <Box
+            sx={{
+              width: "100%",
+              height: 300,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ErrorOutlineIcon
+              sx={{
+                fontSize: "4rem",
+                color: "error.main",
+                mb: 2,
+              }}
+            />
+            <Typography
+              variant="body1"
+              sx={{
+                color: "text.secondary",
+                textAlign: "center",
+              }}
+            >
+              Unable to load chart data
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                textAlign: "center",
+                mt: 1,
+              }}
+            >
+              Please try again later
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const productDistributionData = {
     productNames: products.map((p) => {
       // Truncate long product names for better display

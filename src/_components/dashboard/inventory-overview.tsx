@@ -17,6 +17,7 @@ import {
 import InventoryIcon from "@mui/icons-material/Inventory";
 import WarehouseIcon from "@mui/icons-material/Warehouse";
 import CategoryIcon from "@mui/icons-material/Category";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { formatNumber, formatCurrency } from "@/_utils";
 
 interface Product {
@@ -52,6 +53,9 @@ interface InventoryOverviewProps {
   warehouses: Warehouse[];
   stock: StockItem[];
   inventoryOverview: InventoryOverviewItem[];
+  productsError?: Error | null;
+  warehousesError?: Error | null;
+  stockError?: Error | null;
 }
 
 export const InventoryOverview = ({
@@ -59,6 +63,9 @@ export const InventoryOverview = ({
   warehouses,
   stock,
   inventoryOverview,
+  productsError,
+  warehousesError,
+  stockError,
 }: InventoryOverviewProps) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
@@ -69,283 +76,421 @@ export const InventoryOverview = ({
     return sum + (product ? product.unitCost * item.quantity : 0);
   }, 0);
 
+  // Error placeholder component
+  const ErrorPlaceholder = ({
+    title,
+    icon: Icon,
+  }: {
+    title: string;
+    icon: React.ElementType;
+  }) => (
+    <Card>
+      <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            mb: { xs: 0.5, sm: 1 },
+          }}
+        >
+          <Icon
+            sx={{
+              mr: 1,
+              fontSize: { xs: "1.25rem", sm: "1.5rem" },
+              color: "primary.main",
+            }}
+          />
+          <Typography
+            variant="h6"
+            sx={{ fontSize: { xs: "0.875rem", sm: "1.25rem" } }}
+          >
+            {title}
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 1,
+          }}
+        >
+          <ErrorOutlineIcon
+            sx={{
+              fontSize: { xs: "1.75rem", sm: "3rem" },
+              color: "error.main",
+            }}
+          />
+          <Typography
+            variant="h3"
+            sx={{
+              fontSize: { xs: "1.75rem", sm: "3rem" },
+              fontWeight: "bold",
+              color: "text.secondary",
+            }}
+          >
+            Unavailable
+          </Typography>
+        </Box>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <>
       {/* Summary Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid item xs={12} sm={4}>
-          <Card>
-            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  mb: { xs: 0.5, sm: 1 },
-                }}
-              >
-                <CategoryIcon
+          {productsError ? (
+            <ErrorPlaceholder title="Total Products" icon={CategoryIcon} />
+          ) : (
+            <Card>
+              <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                <Box
                   sx={{
-                    mr: 1,
-                    fontSize: { xs: "1.25rem", sm: "1.5rem" },
-                    color: "primary.main",
+                    display: "flex",
+                    alignItems: "center",
+                    mb: { xs: 0.5, sm: 1 },
                   }}
-                />
-                <Typography
-                  variant="h6"
-                  sx={{ fontSize: { xs: "0.875rem", sm: "1.25rem" } }}
                 >
-                  Total Products
+                  <CategoryIcon
+                    sx={{
+                      mr: 1,
+                      fontSize: { xs: "1.25rem", sm: "1.5rem" },
+                      color: "primary.main",
+                    }}
+                  />
+                  <Typography
+                    variant="h6"
+                    sx={{ fontSize: { xs: "0.875rem", sm: "1.25rem" } }}
+                  >
+                    Total Products
+                  </Typography>
+                </Box>
+                <Typography
+                  variant="h3"
+                  sx={{
+                    fontSize: { xs: "1.75rem", sm: "3rem" },
+                    fontWeight: "bold",
+                  }}
+                >
+                  {formatNumber(products.length)}
                 </Typography>
-              </Box>
-              <Typography
-                variant="h3"
-                sx={{
-                  fontSize: { xs: "1.75rem", sm: "3rem" },
-                  fontWeight: "bold",
-                }}
-              >
-                {formatNumber(products.length)}
-              </Typography>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Card>
-            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  mb: { xs: 0.5, sm: 1 },
-                }}
-              >
-                <WarehouseIcon
+          {warehousesError ? (
+            <ErrorPlaceholder title="Warehouses" icon={WarehouseIcon} />
+          ) : (
+            <Card>
+              <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                <Box
                   sx={{
-                    mr: 1,
-                    fontSize: { xs: "1.25rem", sm: "1.5rem" },
-                    color: "primary.main",
+                    display: "flex",
+                    alignItems: "center",
+                    mb: { xs: 0.5, sm: 1 },
                   }}
-                />
-                <Typography
-                  variant="h6"
-                  sx={{ fontSize: { xs: "0.875rem", sm: "1.25rem" } }}
                 >
-                  Warehouses
+                  <WarehouseIcon
+                    sx={{
+                      mr: 1,
+                      fontSize: { xs: "1.25rem", sm: "1.5rem" },
+                      color: "primary.main",
+                    }}
+                  />
+                  <Typography
+                    variant="h6"
+                    sx={{ fontSize: { xs: "0.875rem", sm: "1.25rem" } }}
+                  >
+                    Warehouses
+                  </Typography>
+                </Box>
+                <Typography
+                  variant="h3"
+                  sx={{
+                    fontSize: { xs: "1.75rem", sm: "3rem" },
+                    fontWeight: "bold",
+                  }}
+                >
+                  {formatNumber(warehouses.length)}
                 </Typography>
-              </Box>
-              <Typography
-                variant="h3"
-                sx={{
-                  fontSize: { xs: "1.75rem", sm: "3rem" },
-                  fontWeight: "bold",
-                }}
-              >
-                {formatNumber(warehouses.length)}
-              </Typography>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
         </Grid>
         <Grid item xs={12} sm={4}>
-          <Card>
-            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  mb: { xs: 0.5, sm: 1 },
-                }}
-              >
-                <InventoryIcon
+          {stockError || productsError ? (
+            <ErrorPlaceholder
+              title="Total Inventory Value"
+              icon={InventoryIcon}
+            />
+          ) : (
+            <Card>
+              <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+                <Box
                   sx={{
-                    mr: 1,
-                    fontSize: { xs: "1.25rem", sm: "1.5rem" },
-                    color: "primary.main",
+                    display: "flex",
+                    alignItems: "center",
+                    mb: { xs: 0.5, sm: 1 },
                   }}
-                />
-                <Typography
-                  variant="h6"
-                  sx={{ fontSize: { xs: "0.875rem", sm: "1.25rem" } }}
                 >
-                  Total Inventory Value
+                  <InventoryIcon
+                    sx={{
+                      mr: 1,
+                      fontSize: { xs: "1.25rem", sm: "1.5rem" },
+                      color: "primary.main",
+                    }}
+                  />
+                  <Typography
+                    variant="h6"
+                    sx={{ fontSize: { xs: "0.875rem", sm: "1.25rem" } }}
+                  >
+                    Total Inventory Value
+                  </Typography>
+                </Box>
+                <Typography
+                  variant="h3"
+                  sx={{
+                    fontSize: { xs: "1.75rem", sm: "3rem" },
+                    fontWeight: "bold",
+                  }}
+                >
+                  {formatCurrency(totalValue)}
                 </Typography>
-              </Box>
-              <Typography
-                variant="h3"
-                sx={{
-                  fontSize: { xs: "1.75rem", sm: "3rem" },
-                  fontWeight: "bold",
-                }}
-              >
-                {formatCurrency(totalValue)}
-              </Typography>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
         </Grid>
       </Grid>
 
       {/* Inventory Overview Table */}
-      <TableContainer
-        component={Paper}
-        sx={{
-          mb: 4,
-          maxWidth: "100%",
-          overflowX: "auto",
-          "&::-webkit-scrollbar": {
-            height: "8px",
-          },
-          "&::-webkit-scrollbar-track": {
-            backgroundColor: "#f1f1f1",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#888",
-            borderRadius: "4px",
-          },
-          "&::-webkit-scrollbar-thumb:hover": {
-            backgroundColor: "#555",
-          },
-        }}
-      >
-        <Table sx={{ minWidth: isMobile ? 800 : "auto" }}>
-          <TableHead>
-            <TableRow>
-              <TableCell
-                sx={{
-                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                  fontWeight: "bold",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                SKU
-              </TableCell>
-              <TableCell
-                sx={{
-                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                  fontWeight: "bold",
-                  minWidth: { xs: 150, sm: "auto" },
-                }}
-              >
-                Product Name
-              </TableCell>
-              <TableCell
-                sx={{
-                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                  fontWeight: "bold",
-                  display: { xs: "none", md: "table-cell" },
-                }}
-              >
-                Category
-              </TableCell>
-              <TableCell
-                align="right"
-                sx={{
-                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                  fontWeight: "bold",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Total Stock
-              </TableCell>
-              <TableCell
-                align="right"
-                sx={{
-                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                  fontWeight: "bold",
-                  display: { xs: "none", sm: "table-cell" },
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Reorder Point
-              </TableCell>
-              <TableCell
-                sx={{
-                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
-                  fontWeight: "bold",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                Status
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {inventoryOverview.map((item) => (
-              <TableRow
-                key={item.id}
-                sx={{
-                  backgroundColor: item.isLowStock ? "#fff3e0" : "inherit",
-                }}
-              >
+      {productsError || stockError ? (
+        <TableContainer
+          component={Paper}
+          sx={{
+            mb: 4,
+            maxWidth: "100%",
+            overflowX: "auto",
+            "&::-webkit-scrollbar": {
+              height: "8px",
+            },
+            "&::-webkit-scrollbar-track": {
+              backgroundColor: "#f1f1f1",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#888",
+              borderRadius: "4px",
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              backgroundColor: "#555",
+            },
+          }}
+        >
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              py: 8,
+              px: 2,
+            }}
+          >
+            <ErrorOutlineIcon
+              sx={{
+                fontSize: { xs: "3rem", sm: "4rem" },
+                color: "error.main",
+                mb: 2,
+              }}
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                fontSize: { xs: "1rem", sm: "1.25rem" },
+                color: "text.secondary",
+                textAlign: "center",
+              }}
+            >
+              Unable to load inventory data
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+                color: "text.secondary",
+                textAlign: "center",
+                mt: 1,
+              }}
+            >
+              Please try again later
+            </Typography>
+          </Box>
+        </TableContainer>
+      ) : (
+        <TableContainer
+          component={Paper}
+          sx={{
+            mb: 4,
+            maxWidth: "100%",
+            overflowX: "auto",
+            "&::-webkit-scrollbar": {
+              height: "8px",
+            },
+            "&::-webkit-scrollbar-track": {
+              backgroundColor: "#f1f1f1",
+            },
+            "&::-webkit-scrollbar-thumb": {
+              backgroundColor: "#888",
+              borderRadius: "4px",
+            },
+            "&::-webkit-scrollbar-thumb:hover": {
+              backgroundColor: "#555",
+            },
+          }}
+        >
+          <Table sx={{ minWidth: isMobile ? 800 : "auto" }}>
+            <TableHead>
+              <TableRow>
                 <TableCell
                   sx={{
                     fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                    fontWeight: "bold",
                     whiteSpace: "nowrap",
                   }}
                 >
-                  {item.sku}
+                  SKU
                 </TableCell>
                 <TableCell
                   sx={{
                     fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                    fontWeight: "bold",
                     minWidth: { xs: 150, sm: "auto" },
                   }}
                 >
-                  {item.name}
+                  Product Name
                 </TableCell>
                 <TableCell
                   sx={{
                     fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                    fontWeight: "bold",
                     display: { xs: "none", md: "table-cell" },
                   }}
                 >
-                  {item.category}
+                  Category
                 </TableCell>
                 <TableCell
                   align="right"
                   sx={{
                     fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                    fontWeight: "bold",
                     whiteSpace: "nowrap",
                   }}
                 >
-                  {formatNumber(item.totalQuantity)}
+                  Total Stock
                 </TableCell>
                 <TableCell
                   align="right"
                   sx={{
                     fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                    fontWeight: "bold",
                     display: { xs: "none", sm: "table-cell" },
                     whiteSpace: "nowrap",
                   }}
                 >
-                  {formatNumber(item.reorderPoint)}
+                  Reorder Point
                 </TableCell>
                 <TableCell
                   sx={{
                     fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                    fontWeight: "bold",
                     whiteSpace: "nowrap",
                   }}
                 >
-                  {item.isLowStock ? (
-                    <Typography
-                      color="warning.main"
-                      fontWeight="bold"
-                      sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
-                    >
-                      Low Stock
-                    </Typography>
-                  ) : (
-                    <Typography
-                      color="success.main"
-                      sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
-                    >
-                      In Stock
-                    </Typography>
-                  )}
+                  Status
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+            </TableHead>
+            <TableBody>
+              {inventoryOverview.map((item) => (
+                <TableRow
+                  key={item.id}
+                  sx={{
+                    backgroundColor: item.isLowStock ? "#fff3e0" : "inherit",
+                  }}
+                >
+                  <TableCell
+                    sx={{
+                      fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {item.sku}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                      minWidth: { xs: 150, sm: "auto" },
+                    }}
+                  >
+                    {item.name}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                      display: { xs: "none", md: "table-cell" },
+                    }}
+                  >
+                    {item.category}
+                  </TableCell>
+                  <TableCell
+                    align="right"
+                    sx={{
+                      fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {formatNumber(item.totalQuantity)}
+                  </TableCell>
+                  <TableCell
+                    align="right"
+                    sx={{
+                      fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                      display: { xs: "none", sm: "table-cell" },
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {formatNumber(item.reorderPoint)}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {item.isLowStock ? (
+                      <Typography
+                        color="warning.main"
+                        fontWeight="bold"
+                        sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                      >
+                        Low Stock
+                      </Typography>
+                    ) : (
+                      <Typography
+                        color="success.main"
+                        sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+                      >
+                        In Stock
+                      </Typography>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
     </>
   );
 };

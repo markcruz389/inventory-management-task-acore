@@ -1,4 +1,4 @@
-import { Typography, Grid, Alert, Box } from "@mui/material";
+import { Typography, Grid, Box } from "@mui/material";
 import { useProducts } from "@/_hooks/use-products";
 import { useWarehouses } from "@/_hooks/use-warehouses";
 import { useStock } from "@/_hooks/use-stock";
@@ -28,7 +28,6 @@ export default function Home() {
   } = useStock();
 
   const isLoading = productsLoading || warehousesLoading || stockLoading;
-  const error = productsError || warehousesError || stockError;
 
   // Get products with stock across all warehouses
   const inventoryOverview = products.map((product: any) => {
@@ -50,6 +49,7 @@ export default function Home() {
         mt: 4,
         mb: 4,
         px: { xs: 2, sm: 3 },
+        pb: 2,
         maxWidth: "lg",
         mx: "auto",
         width: "100%",
@@ -60,9 +60,7 @@ export default function Home() {
         Dashboard
       </Typography>
 
-      {error ? (
-        <Alert severity="error">Error loading data: {error.message}</Alert>
-      ) : isLoading ? (
+      {isLoading ? (
         <DashboardSkeleton />
       ) : (
         <>
@@ -71,25 +69,39 @@ export default function Home() {
             warehouses={warehouses}
             stock={stock}
             inventoryOverview={inventoryOverview}
+            productsError={productsError}
+            warehousesError={warehousesError}
+            stockError={stockError}
           />
 
           {/* Charts Row 1: Stock Level vs Reorder Point */}
           <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: 4 }}>
             <Grid item xs={12}>
-              <StockHealthChart inventoryOverview={inventoryOverview} />
+              <StockHealthChart
+                inventoryOverview={inventoryOverview}
+                productsError={productsError}
+                stockError={stockError}
+              />
             </Grid>
           </Grid>
 
           {/* Charts Row 2: Inventory Value by Category & Product Distribution */}
           <Grid container spacing={{ xs: 2, sm: 3 }}>
             <Grid item xs={12} md={4}>
-              <CategoryValueChart inventoryOverview={inventoryOverview} />
+              <CategoryValueChart
+                inventoryOverview={inventoryOverview}
+                productsError={productsError}
+                stockError={stockError}
+              />
             </Grid>
             <Grid item xs={12} md={8}>
               <ProductDistributionChart
                 products={products}
                 warehouses={warehouses}
                 stock={stock}
+                productsError={productsError}
+                warehousesError={warehousesError}
+                stockError={stockError}
               />
             </Grid>
           </Grid>

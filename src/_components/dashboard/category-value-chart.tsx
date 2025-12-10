@@ -1,5 +1,6 @@
 import { Card, CardContent, Typography, Box } from "@mui/material";
-import { PieChart } from "@mui/x-charts/PieChart";
+import { PieChart, pieArcLabelClasses } from "@mui/x-charts/PieChart";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { tealChartColors } from "@/_theme/theme";
 
 interface InventoryOverviewItem {
@@ -10,9 +11,62 @@ interface InventoryOverviewItem {
 
 export const CategoryValueChart = ({
   inventoryOverview,
+  productsError,
+  stockError,
 }: {
   inventoryOverview: InventoryOverviewItem[];
+  productsError?: Error | null;
+  stockError?: Error | null;
 }) => {
+  if (productsError || stockError) {
+    return (
+      <Card>
+        <CardContent>
+          <Typography variant="h6" gutterBottom>
+            Inventory Value by Category
+          </Typography>
+          <Box
+            sx={{
+              width: "100%",
+              height: 300,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <ErrorOutlineIcon
+              sx={{
+                fontSize: "4rem",
+                color: "error.main",
+                mb: 2,
+              }}
+            />
+            <Typography
+              variant="body1"
+              sx={{
+                color: "text.secondary",
+                textAlign: "center",
+              }}
+            >
+              Unable to load chart data
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{
+                color: "text.secondary",
+                textAlign: "center",
+                mt: 1,
+              }}
+            >
+              Please try again later
+            </Typography>
+          </Box>
+        </CardContent>
+      </Card>
+    );
+  }
+
   const categoryValueData = Object.values(
     inventoryOverview.reduce((acc, product) => {
       const value = product.totalQuantity * product.unitCost;
@@ -41,8 +95,15 @@ export const CategoryValueChart = ({
                   highlight: "item",
                 },
                 valueFormatter: (value) => `$${value.value.toFixed(2)}`,
+                arcLabel: (item) => `$${item.value.toFixed(0)}`,
+                arcLabelMinAngle: 20,
               },
             ]}
+            sx={{
+              [`& .${pieArcLabelClasses.root}`]: {
+                fill: "white",
+              },
+            }}
             height={280}
           />
         </Box>
