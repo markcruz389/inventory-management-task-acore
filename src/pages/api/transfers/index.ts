@@ -11,6 +11,9 @@ export default async function handler(
   const stockFilePath = path.join(process.cwd(), "data", "stock.json");
 
   if (req.method === "GET") {
+    // Simulate async processing delay
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     const jsonData = fs.readFileSync(transfersFilePath);
     const transfers = JSON.parse(jsonData.toString());
     res.status(200).json(transfers);
