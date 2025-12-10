@@ -1,21 +1,4 @@
-import { useState } from "react";
-import Link from "next/link";
-import {
-  Typography,
-  Grid,
-  Button,
-  AppBar,
-  Toolbar,
-  Alert,
-  IconButton,
-  Menu,
-  MenuItem,
-  Box,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import InventoryIcon from "@mui/icons-material/Inventory";
-import MenuIcon from "@mui/icons-material/Menu";
+import { Typography, Grid, Alert, Box } from "@mui/material";
 import { useProducts } from "@/_hooks/use-products";
 import { useWarehouses } from "@/_hooks/use-warehouses";
 import { useStock } from "@/_hooks/use-stock";
@@ -28,12 +11,6 @@ import {
 } from "@/_components/dashboard";
 
 export default function Home() {
-  const [mobileMenuAnchor, setMobileMenuAnchor] = useState<HTMLElement | null>(
-    null
-  );
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-
   const {
     data: products = [],
     isLoading: productsLoading,
@@ -53,14 +30,6 @@ export default function Home() {
   const isLoading = productsLoading || warehousesLoading || stockLoading;
   const error = productsError || warehousesError || stockError;
 
-  const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setMobileMenuAnchor(event.currentTarget);
-  };
-
-  const handleMobileMenuClose = () => {
-    setMobileMenuAnchor(null);
-  };
-
   // Get products with stock across all warehouses
   const inventoryOverview = products.map((product: any) => {
     const productStock = stock.filter((s: any) => s.productId === product.id);
@@ -76,141 +45,56 @@ export default function Home() {
   });
 
   return (
-    <>
-      <AppBar position="static">
-        <Toolbar>
-          <InventoryIcon sx={{ mr: { xs: 1, sm: 2 } }} />
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{
-              flexGrow: 1,
-              display: { xs: "none", sm: "block" },
-            }}
-          >
-            Inventory Management System
-          </Typography>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{
-              flexGrow: 1,
-              display: { xs: "block", sm: "none" },
-            }}
-          >
-            Inventory
-          </Typography>
-          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 1 }}>
-            <Button color="inherit" component={Link} href="/products">
-              Products
-            </Button>
-            <Button color="inherit" component={Link} href="/warehouses">
-              Warehouses
-            </Button>
-            <Button color="inherit" component={Link} href="/stock">
-              Stock Levels
-            </Button>
-          </Box>
-          <IconButton
-            color="inherit"
-            aria-label="menu"
-            aria-controls="mobile-menu"
-            aria-haspopup="true"
-            onClick={handleMobileMenuOpen}
-            sx={{ display: { xs: "block", md: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Menu
-            id="mobile-menu"
-            anchorEl={mobileMenuAnchor}
-            open={Boolean(mobileMenuAnchor)}
-            onClose={handleMobileMenuClose}
-            anchorOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-            transformOrigin={{
-              vertical: "top",
-              horizontal: "right",
-            }}
-          >
-            <MenuItem
-              component={Link}
-              href="/products"
-              onClick={handleMobileMenuClose}
-            >
-              Products
-            </MenuItem>
-            <MenuItem
-              component={Link}
-              href="/warehouses"
-              onClick={handleMobileMenuClose}
-            >
-              Warehouses
-            </MenuItem>
-            <MenuItem
-              component={Link}
-              href="/stock"
-              onClick={handleMobileMenuClose}
-            >
-              Stock Levels
-            </MenuItem>
-          </Menu>
-        </Toolbar>
-      </AppBar>
+    <Box
+      sx={{
+        mt: 4,
+        mb: 4,
+        px: { xs: 2, sm: 3 },
+        maxWidth: "lg",
+        mx: "auto",
+        width: "100%",
+        overflow: "hidden",
+      }}
+    >
+      <Typography variant="h4" component="h1" gutterBottom>
+        Dashboard
+      </Typography>
 
-      <Box
-        sx={{
-          mt: 4,
-          mb: 4,
-          px: { xs: 2, sm: 3 },
-          maxWidth: "lg",
-          mx: "auto",
-          width: "100%",
-          overflow: "hidden",
-        }}
-      >
-        <Typography variant="h4" component="h1" gutterBottom>
-          Dashboard
-        </Typography>
+      {error ? (
+        <Alert severity="error">Error loading data: {error.message}</Alert>
+      ) : isLoading ? (
+        <DashboardSkeleton />
+      ) : (
+        <>
+          <InventoryOverview
+            products={products}
+            warehouses={warehouses}
+            stock={stock}
+            inventoryOverview={inventoryOverview}
+          />
 
-        {error ? (
-          <Alert severity="error">Error loading data: {error.message}</Alert>
-        ) : isLoading ? (
-          <DashboardSkeleton />
-        ) : (
-          <>
-            <InventoryOverview
-              products={products}
-              warehouses={warehouses}
-              stock={stock}
-              inventoryOverview={inventoryOverview}
-            />
-
-            {/* Charts Row 1: Stock Level vs Reorder Point */}
-            <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: 4 }}>
-              <Grid item xs={12}>
-                <StockHealthChart inventoryOverview={inventoryOverview} />
-              </Grid>
+          {/* Charts Row 1: Stock Level vs Reorder Point */}
+          <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: 4 }}>
+            <Grid item xs={12}>
+              <StockHealthChart inventoryOverview={inventoryOverview} />
             </Grid>
+          </Grid>
 
-            {/* Charts Row 2: Inventory Value by Category & Product Distribution */}
-            <Grid container spacing={{ xs: 2, sm: 3 }}>
-              <Grid item xs={12} md={4}>
-                <CategoryValueChart inventoryOverview={inventoryOverview} />
-              </Grid>
-              <Grid item xs={12} md={8}>
-                <ProductDistributionChart
-                  products={products}
-                  warehouses={warehouses}
-                  stock={stock}
-                />
-              </Grid>
+          {/* Charts Row 2: Inventory Value by Category & Product Distribution */}
+          <Grid container spacing={{ xs: 2, sm: 3 }}>
+            <Grid item xs={12} md={4}>
+              <CategoryValueChart inventoryOverview={inventoryOverview} />
             </Grid>
-          </>
-        )}
-      </Box>
-    </>
+            <Grid item xs={12} md={8}>
+              <ProductDistributionChart
+                products={products}
+                warehouses={warehouses}
+                stock={stock}
+              />
+            </Grid>
+          </Grid>
+        </>
+      )}
+    </Box>
   );
 }
