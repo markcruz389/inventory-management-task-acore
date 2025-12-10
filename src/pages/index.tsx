@@ -22,10 +22,8 @@ import { useStock } from "@/_hooks/use-stock";
 import {
   DashboardSkeleton,
   CategoryValueChart,
-  WarehouseStockChart,
   StockHealthChart,
   ProductDistributionChart,
-  CostQuantityChart,
   InventoryOverview,
 } from "@/_components/dashboard";
 
@@ -190,34 +188,24 @@ export default function Home() {
               inventoryOverview={inventoryOverview}
             />
 
-            {/* Charts Row 1: Pie Chart & Warehouse Stock Bar Chart */}
-            <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: 4 }}>
-              <Grid item xs={12} md={6}>
-                <CategoryValueChart inventoryOverview={inventoryOverview} />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <WarehouseStockChart warehouses={warehouses} stock={stock} />
-              </Grid>
-            </Grid>
-
-            {/* Charts Row 2: Stock Level vs Reorder Point */}
+            {/* Charts Row 1: Stock Level vs Reorder Point */}
             <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: 4 }}>
               <Grid item xs={12}>
                 <StockHealthChart inventoryOverview={inventoryOverview} />
               </Grid>
             </Grid>
 
-            {/* Charts Row 3: Product Distribution & Scatter Chart */}
+            {/* Charts Row 2: Inventory Value by Category & Product Distribution */}
             <Grid container spacing={{ xs: 2, sm: 3 }}>
-              <Grid item xs={12} md={7}>
+              <Grid item xs={12} md={4}>
+                <CategoryValueChart inventoryOverview={inventoryOverview} />
+              </Grid>
+              <Grid item xs={12} md={8}>
                 <ProductDistributionChart
                   products={products}
                   warehouses={warehouses}
                   stock={stock}
                 />
-              </Grid>
-              <Grid item xs={12} md={5}>
-                <CostQuantityChart inventoryOverview={inventoryOverview} />
               </Grid>
             </Grid>
           </>
