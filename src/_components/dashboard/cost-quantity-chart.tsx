@@ -1,5 +1,6 @@
 import { Card, CardContent, Typography, Box } from "@mui/material";
 import { ScatterChart } from "@mui/x-charts/ScatterChart";
+import { tealChartColors } from "@/_theme/theme";
 
 interface InventoryOverviewItem {
   name: string;
@@ -26,6 +27,7 @@ export const CostQuantityChart = ({
         </Typography>
         <Box sx={{ width: "100%", height: 300 }}>
           <ScatterChart
+            colors={[tealChartColors[0]]}
             series={[
               {
                 data: costVsQuantityData,

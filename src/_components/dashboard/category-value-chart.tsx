@@ -1,5 +1,6 @@
 import { Card, CardContent, Typography, Box } from "@mui/material";
 import { PieChart } from "@mui/x-charts/PieChart";
+import { tealChartColors } from "@/_theme/theme";
 
 interface InventoryOverviewItem {
   category: string;
@@ -31,6 +32,7 @@ export const CategoryValueChart = ({
         </Typography>
         <Box sx={{ width: "100%", height: 300 }}>
           <PieChart
+            colors={tealChartColors}
             series={[
               {
                 data: categoryValueData,

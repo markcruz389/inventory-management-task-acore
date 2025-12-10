@@ -1,5 +1,6 @@
 import { Card, CardContent, Typography, Box } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
+import { tealChartColors } from "@/_theme/theme";
 
 interface Warehouse {
   id: number;
@@ -35,6 +36,7 @@ export const WarehouseStockChart = ({
         </Typography>
         <Box sx={{ width: "100%", height: 300 }}>
           <BarChart
+            colors={[tealChartColors[0]]}
             xAxis={[
               {
                 scaleType: "band",

@@ -1,5 +1,6 @@
 import { Card, CardContent, Typography, Box } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
+import { tealChartColors } from "@/_theme/theme";
 
 interface Product {
   id: number;
@@ -35,7 +36,7 @@ export const ProductDistributionChart = ({
         ? `${p.name.substring(0, maxLength)}...`
         : p.name;
     }),
-    warehouseSeries: warehouses.map((warehouse) => ({
+    warehouseSeries: warehouses.map((warehouse, index) => ({
       data: products.map((product) => {
         const stockItem = stock.find(
           (s) => s.productId === product.id && s.warehouseId === warehouse.id
@@ -44,6 +45,7 @@ export const ProductDistributionChart = ({
       }),
       label: `${warehouse.location} (${warehouse.code})`,
       stack: "total",
+      color: tealChartColors[index % tealChartColors.length],
     })),
   };
 
@@ -55,6 +57,7 @@ export const ProductDistributionChart = ({
         </Typography>
         <Box sx={{ width: "100%", height: 300 }}>
           <BarChart
+            colors={tealChartColors}
             xAxis={[
               {
                 scaleType: "band",

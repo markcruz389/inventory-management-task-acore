@@ -1,5 +1,6 @@
 import { Card, CardContent, Typography, Box } from "@mui/material";
 import { BarChart } from "@mui/x-charts/BarChart";
+import { tealChartColors } from "@/_theme/theme";
 
 interface InventoryOverviewItem {
   name: string;
@@ -26,6 +27,7 @@ export const StockHealthChart = ({
         </Typography>
         <Box sx={{ width: "100%", height: 300 }}>
           <BarChart
+            colors={[tealChartColors[0], tealChartColors[2]]}
             yAxis={[
               {
                 scaleType: "band",
