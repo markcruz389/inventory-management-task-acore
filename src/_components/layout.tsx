@@ -113,6 +113,19 @@ const Header = () => {
           >
             Stock Levels
           </Button>
+          <Button
+            color="inherit"
+            component={Link}
+            href="/transfers"
+            sx={{
+              borderBottom: isActive("/transfers") ? 2 : 0,
+              borderColor: "inherit",
+              borderRadius: 0,
+              pb: 0.5,
+            }}
+          >
+            Transfers
+          </Button>
         </Box>
         <IconButton
           color="inherit"
@@ -225,6 +238,28 @@ const Header = () => {
             }}
           >
             Stock Levels
+          </MenuItem>
+          <MenuItem
+            component={Link}
+            href="/transfers"
+            onClick={handleMobileMenuClose}
+            selected={isActive("/transfers")}
+            sx={{
+              "&.Mui-selected": {
+                backgroundColor: "rgba(255, 255, 255, 0.08)",
+                "&::before": {
+                  content: '""',
+                  position: "absolute",
+                  left: 0,
+                  top: 0,
+                  bottom: 0,
+                  width: 3,
+                  backgroundColor: "currentColor",
+                },
+              },
+            }}
+          >
+            Transfers
           </MenuItem>
         </Menu>
       </Toolbar>
