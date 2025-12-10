@@ -8,13 +8,10 @@ import {
   Button,
   Box,
   Paper,
-  AppBar,
-  Toolbar,
   MenuItem,
   CircularProgress,
   Alert,
 } from "@mui/material";
-import InventoryIcon from "@mui/icons-material/Inventory";
 import { useCreateStock } from "@/_hooks/use-create-stock";
 import { useProducts } from "@/_hooks/use-products";
 import { useWarehouses } from "@/_hooks/use-warehouses";
@@ -70,111 +67,78 @@ export default function AddStock() {
   }
 
   return (
-    <>
-      <AppBar position="static">
-        <Toolbar>
-          <InventoryIcon sx={{ mr: 2 }} />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Inventory Management System
-          </Typography>
-          <Button color="inherit" component={Link} href="/">
-            Dashboard
-          </Button>
-          <Button color="inherit" component={Link} href="/products">
-            Products
-          </Button>
-          <Button color="inherit" component={Link} href="/warehouses">
-            Warehouses
-          </Button>
-          <Button color="inherit" component={Link} href="/stock">
-            Stock Levels
-          </Button>
-        </Toolbar>
-      </AppBar>
+    <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Add Stock Record
+        </Typography>
 
-      <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
-        <Paper elevation={3} sx={{ p: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            Add Stock Record
-          </Typography>
+        {createStock.error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {createStock.error.message}
+          </Alert>
+        )}
 
-          {createStock.error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {createStock.error.message}
-            </Alert>
-          )}
-
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{ mt: 2 }}
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            select
+            label="Product"
+            name="productId"
+            value={stock.productId}
+            onChange={handleChange}
           >
-            <TextField
-              margin="normal"
-              required
+            {products.map((product: any) => (
+              <MenuItem key={product.id} value={product.id}>
+                {product.name} ({product.sku})
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            select
+            label="Warehouse"
+            name="warehouseId"
+            value={stock.warehouseId}
+            onChange={handleChange}
+          >
+            {warehouses.map((warehouse: any) => (
+              <MenuItem key={warehouse.id} value={warehouse.id}>
+                {warehouse.name} ({warehouse.code})
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            label="Quantity"
+            name="quantity"
+            type="number"
+            inputProps={{ min: "0" }}
+            value={stock.quantity}
+            onChange={handleChange}
+          />
+          <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
+            <Button
+              type="submit"
               fullWidth
-              select
-              label="Product"
-              name="productId"
-              value={stock.productId}
-              onChange={handleChange}
+              variant="contained"
+              color="primary"
+              disabled={createStock.isPending}
             >
-              {products.map((product: any) => (
-                <MenuItem key={product.id} value={product.id}>
-                  {product.name} ({product.sku})
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              select
-              label="Warehouse"
-              name="warehouseId"
-              value={stock.warehouseId}
-              onChange={handleChange}
-            >
-              {warehouses.map((warehouse: any) => (
-                <MenuItem key={warehouse.id} value={warehouse.id}>
-                  {warehouse.name} ({warehouse.code})
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              label="Quantity"
-              name="quantity"
-              type="number"
-              inputProps={{ min: "0" }}
-              value={stock.quantity}
-              onChange={handleChange}
-            />
-            <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                disabled={createStock.isPending}
-              >
-                {createStock.isPending ? "Adding..." : "Add Stock"}
-              </Button>
-              <Button
-                fullWidth
-                variant="outlined"
-                component={Link}
-                href="/stock"
-              >
-                Cancel
-              </Button>
-            </Box>
+              {createStock.isPending ? "Adding..." : "Add Stock"}
+            </Button>
+            <Button fullWidth variant="outlined" component={Link} href="/stock">
+              Cancel
+            </Button>
           </Box>
-        </Paper>
-      </Container>
-    </>
+        </Box>
+      </Paper>
+    </Container>
   );
 }

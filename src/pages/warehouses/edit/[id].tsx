@@ -8,12 +8,9 @@ import {
   Button,
   Box,
   Paper,
-  AppBar,
-  Toolbar,
   CircularProgress,
   Alert,
 } from "@mui/material";
-import InventoryIcon from "@mui/icons-material/Inventory";
 import { useWarehouse } from "@/_hooks/use-warehouse";
 import { useUpdateWarehouse } from "@/_hooks/use-update-warehouse";
 
@@ -76,95 +73,67 @@ export default function EditWarehouse() {
   }
 
   return (
-    <>
-      <AppBar position="static">
-        <Toolbar>
-          <InventoryIcon sx={{ mr: 2 }} />
-          <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Inventory Management System
-          </Typography>
-          <Button color="inherit" component={Link} href="/">
-            Dashboard
-          </Button>
-          <Button color="inherit" component={Link} href="/products">
-            Products
-          </Button>
-          <Button color="inherit" component={Link} href="/warehouses">
-            Warehouses
-          </Button>
-          <Button color="inherit" component={Link} href="/stock">
-            Stock Levels
-          </Button>
-        </Toolbar>
-      </AppBar>
+    <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
+      <Paper elevation={3} sx={{ p: 4 }}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Edit Warehouse
+        </Typography>
 
-      <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
-        <Paper elevation={3} sx={{ p: 4 }}>
-          <Typography variant="h4" component="h1" gutterBottom>
-            Edit Warehouse
-          </Typography>
+        {updateWarehouse.error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {updateWarehouse.error.message}
+          </Alert>
+        )}
 
-          {updateWarehouse.error && (
-            <Alert severity="error" sx={{ mb: 2 }}>
-              {updateWarehouse.error.message}
-            </Alert>
-          )}
-
-          <Box
-            component="form"
-            onSubmit={handleSubmit}
-            noValidate
-            sx={{ mt: 2 }}
-          >
-            <TextField
-              margin="normal"
-              required
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            label="Warehouse Code"
+            name="code"
+            value={warehouse.code}
+            onChange={handleChange}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            label="Warehouse Name"
+            name="name"
+            value={warehouse.name}
+            onChange={handleChange}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            label="Location"
+            name="location"
+            value={warehouse.location}
+            onChange={handleChange}
+          />
+          <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
+            <Button
+              type="submit"
               fullWidth
-              label="Warehouse Code"
-              name="code"
-              value={warehouse.code}
-              onChange={handleChange}
-            />
-            <TextField
-              margin="normal"
-              required
+              variant="contained"
+              color="primary"
+              disabled={updateWarehouse.isPending}
+            >
+              {updateWarehouse.isPending ? "Updating..." : "Update Warehouse"}
+            </Button>
+            <Button
               fullWidth
-              label="Warehouse Name"
-              name="name"
-              value={warehouse.name}
-              onChange={handleChange}
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              label="Location"
-              name="location"
-              value={warehouse.location}
-              onChange={handleChange}
-            />
-            <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
-              <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                color="primary"
-                disabled={updateWarehouse.isPending}
-              >
-                {updateWarehouse.isPending ? "Updating..." : "Update Warehouse"}
-              </Button>
-              <Button
-                fullWidth
-                variant="outlined"
-                component={Link}
-                href="/warehouses"
-              >
-                Cancel
-              </Button>
-            </Box>
+              variant="outlined"
+              component={Link}
+              href="/warehouses"
+            >
+              Cancel
+            </Button>
           </Box>
-        </Paper>
-      </Container>
-    </>
+        </Box>
+      </Paper>
+    </Container>
   );
 }
