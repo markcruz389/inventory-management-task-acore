@@ -100,7 +100,7 @@ export default function Transfers() {
   }
 
   return (
-    <Container sx={{ mt: 4, mb: 4 }}>
+    <Container sx={{ mt: 4 }}>
       <Box
         sx={{
           display: "flex",

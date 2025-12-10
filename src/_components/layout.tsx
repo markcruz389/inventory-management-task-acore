@@ -293,12 +293,18 @@ const Footer = () => {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <>
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <Header />
       <Box
         component="main"
         sx={{
-          minHeight: "calc(100vh - 64px - 80px)",
+          flex: 1,
           display: "flex",
           flexDirection: "column",
         }}
@@ -306,6 +312,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </Box>
       <Footer />
-    </>
+    </Box>
   );
 }
