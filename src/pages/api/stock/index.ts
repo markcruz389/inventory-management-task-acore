@@ -1,21 +1,15 @@
-import fs from "fs";
-import path from "path";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { db } from "@/_lib/db";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
-  const filePath = path.join(process.cwd(), "data", "stock.json");
-  const jsonData = fs.readFileSync(filePath);
-  const stock = JSON.parse(jsonData.toString());
-
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method === "GET") {
+    const stock = await db.stock.findAll();
     res.status(200).json(stock);
   } else if (req.method === "POST") {
-    const newStock = {
-      id: Math.max(...stock.map((s: { id: number }) => s.id), 0) + 1,
-      ...req.body,
-    };
-    stock.push(newStock);
-    fs.writeFileSync(filePath, JSON.stringify(stock, null, 2));
+    const newStock = await db.stock.create(req.body);
     res.status(201).json(newStock);
   } else {
     res.status(405).json({ message: "Method Not Allowed" });
