@@ -1,19 +1,24 @@
 # Multi-Warehouse Inventory Management System
 
 ## Overview
+
 Enhance the existing Multi-Warehouse Inventory Management System built with Next.js and Material-UI (MUI) for GreenSupply Co, a sustainable product distribution company. The current system is functional but needs significant improvements to be production-ready.
 
 ## 🎯 Business Context
+
 GreenSupply Co distributes eco-friendly products across multiple warehouse locations throughout North America. They need to efficiently track inventory across warehouses, manage stock movements, monitor inventory values, and prevent stockouts. This system is critical for their daily operations and customer satisfaction.
 
 ## 🛠️ Tech Stack
+
 - [Next.js](https://nextjs.org/) - React framework
 - [Material-UI (MUI)](https://mui.com/) - UI component library
 - [React](https://reactjs.org/) - JavaScript library
 - JSON file storage (for this assessment)
 
 ## 📋 Current Features (Already Implemented)
+
 The basic system includes:
+
 - ✅ Products management (CRUD operations)
 - ✅ Warehouse management (CRUD operations)
 - ✅ Stock level tracking per warehouse
@@ -69,6 +74,7 @@ Design the data structure, API contracts, and business logic as you see fit for 
 **B. Transfer Page UI**
 
 Create a `/transfers` page that provides:
+
 - A form to initiate stock transfers between warehouses
 - Transfer history view
 - Appropriate error handling and user feedback
@@ -86,6 +92,7 @@ Design the interface to be intuitive for warehouse managers performing daily ope
 Build a low stock alert and reorder recommendation system that helps warehouse managers proactively manage inventory levels.
 
 **Key Functionality:**
+
 - Identify products that need reordering based on current stock levels and reorder points
 - Categorize inventory by stock status (critical, low, adequate, overstocked)
 - Provide actionable reorder recommendations
@@ -93,6 +100,7 @@ Build a low stock alert and reorder recommendation system that helps warehouse m
 - Integrate alerts into the main dashboard
 
 **Implementation Details:**
+
 - Create an `/alerts` page for viewing and managing alerts
 - Calculate stock across all warehouses
 - Persist alert tracking data (create `data/alerts.json`)
@@ -105,11 +113,13 @@ Use your judgment to determine appropriate thresholds, calculations, and user wo
 ## 📦 Getting Started
 
 ### Prerequisites
+
 - Node.js (v16 or higher recommended)
 - Modern web browser (Chrome, Firefox, Safari, or Edge)
 - Screen recording software for video submission (Loom, OBS, QuickTime, etc.)
 
 ### Installation
+
 ```bash
 # Install dependencies
 npm install
@@ -121,6 +131,7 @@ npm run dev
 ```
 
 ### Project Structure
+
 ```
 inventory-management-task/
 ├── data/                  # JSON data files
@@ -136,6 +147,7 @@ The existing codebase includes product, warehouse, and stock management features
 ## 📝 Submission Requirements
 
 ### 1. Code Submission
+
 - Push your code to **your own GitHub repository** (fork or new repo)
 - Clear commit history showing your progression
 - Update `package.json` with any new dependencies
@@ -146,16 +158,19 @@ The existing codebase includes product, warehouse, and stock management features
 Record a video demonstration covering:
 
 **Feature Demo (4-5 minutes)**
+
 - Redesigned dashboard walkthrough (demonstrate responsiveness)
 - Stock transfer workflow (show both successful and error scenarios)
 - Alert system functionality
 
 **Code Explanation (3-4 minutes)**
+
 - Key technical decisions and approach
 - Most challenging aspects and solutions
 - Code structure highlights
 
 **Reflection (1-2 minutes)**
+
 - What you're proud of
 - Known limitations or trade-offs
 - What you'd improve with more time
@@ -165,6 +180,7 @@ Record a video demonstration covering:
 ### 3. Update This README
 
 Add an implementation summary at the bottom with:
+
 - Your name and completion time
 - Features completed
 - Key technical decisions
@@ -180,6 +196,7 @@ Add an implementation summary at the bottom with:
 **Deadline:** 3 days (72 hours) from receiving this assignment
 
 Submit:
+
 1. GitHub repository link
 2. Video walkthrough link
 3. Updated README with implementation notes
@@ -193,6 +210,7 @@ Submit:
 ## 🏆 Optional Enhancements
 
 If you have extra time, consider adding:
+
 - Live deployment (Vercel/Netlify)
 - Dark mode
 - Export functionality (CSV/PDF)
@@ -229,6 +247,7 @@ A: This is solely for technical assessment. Your code will not be used commercia
 ## 🚀 Final Notes
 
 This assessment is designed to simulate real-world development scenarios. We're looking for:
+
 - Clean, maintainable code
 - Thoughtful problem-solving
 - Professional UI/UX
@@ -242,3 +261,47 @@ Good luck! 💪
 ---
 
 **Setup issues?** Verify Node.js is installed and you're using a modern browser. If problems persist, document them in your submission.
+
+# Implementation Summary
+
+## Mark Anthony Cruz
+
+- Completion time: December 11, 8:25PM Philippine Standard Time (GMT+8)
+
+## Features completed
+
+- Stock transferes (UI and Functionality)
+- Alerts (UI and Functionality)
+- Dashboard (Redesign)
+- Skeleton loaders
+- Modal & Toast messages
+
+## Key technical decisions
+
+- Used Typescript for better Developer Experience.
+- Used React/Tanstack Query for client side fetching, mutations and cleaner state and cache handling.
+- Limit alert state to two only (critical and low) for simplicity.
+
+## Known limitations
+
+- Using older version of Next.js, newer versions has more features and flexibility especially in data fetching and rendering.
+- Not using a proper database which results into not properly simulating a production environment.
+
+## Testing instructions
+
+1. Clone the repo.
+2. In the root directory, run `npm install`.
+3. In the root directory, run `npm run dev`.
+4. Open a browser and go to `http://localhost:3000`.
+
+## Video walkthrough link
+
+- https://www.youtube.com/watch?v=SARVFHK-0Vw
+
+## New dependencies added
+
+- React Hoook Form (Form handling) - https://react-hook-form.com/
+- Zod (Validation) - https://zod.dev/
+- Tanstack Query (Data fetching and State management) - https://tanstack.com/query/latest
+- MUI Data grid (Table) - https://mui.com/x/react-data-grid/
+- MUI Charts - https://mui.com/x/react-charts/
