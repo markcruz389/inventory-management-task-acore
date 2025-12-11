@@ -3,7 +3,6 @@ import {
   Container,
   Typography,
   Box,
-  CircularProgress,
   Snackbar,
   Alert,
   Grid,
@@ -18,6 +17,7 @@ import { useDismissAlert } from "@/_hooks/mutations/use-dismiss-alert";
 import {
   AlertsTable,
   AlertsTableSkeleton,
+  AlertsPageSkeleton,
   AlertsError,
   DismissedAlertsModal,
   DismissConfirmationDialog,
@@ -88,18 +88,7 @@ export default function AlertsPage() {
   const lowCount = alerts.filter((a) => a.stockStatus === "low").length;
 
   if (isLoading) {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          minHeight: "100vh",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
+    return <AlertsPageSkeleton />;
   }
 
   return (
