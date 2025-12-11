@@ -110,10 +110,36 @@ const createTable = <T extends Entity>(tableName: string) => {
   };
 };
 
+// Dismissed alerts storage - follows same table pattern as other entities
+type DismissedAlertEntity = { id: number; productId: number };
+
+const createDismissedAlertsStorage = () => {
+  const table = createTable<DismissedAlertEntity>("dismissed-alerts");
+
+  return {
+    ...table,
+    async getDismissedIds(): Promise<number[]> {
+      const data = await table.findAll();
+      return data.map((item) => item.productId);
+    },
+
+    async dismissProduct(productId: number): Promise<void> {
+      const exists = await table.findById(productId);
+      if (!exists) {
+        await table.createWithId({ id: productId, productId });
+      }
+    },
+
+    async undismissProduct(productId: number): Promise<void> {
+      await table.delete(productId);
+    },
+  };
+};
+
 export const db = {
   products: createTable("products"),
   stock: createTable("stock"),
   warehouses: createTable("warehouses"),
   transfers: createTable("transfers"),
-  alerts: createTable("alerts"),
+  dismissedAlerts: createDismissedAlertsStorage(),
 };

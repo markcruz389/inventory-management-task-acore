@@ -9,6 +9,7 @@ import {
   ProductDistributionChart,
   InventoryOverview,
 } from "@/_components/dashboard";
+import { AlertsSummary } from "@/_components/dashboard/alerts-summary";
 
 export default function Home() {
   const {
@@ -64,6 +65,7 @@ export default function Home() {
         <DashboardSkeleton />
       ) : (
         <>
+          <AlertsSummary />
           <InventoryOverview
             products={products}
             warehouses={warehouses}

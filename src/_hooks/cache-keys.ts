@@ -15,4 +15,8 @@ export const queryKeys = {
     all: ["transfers"] as const,
     detail: (id: string | number) => ["transfers", id] as const,
   },
+  alerts: {
+    all: ["alerts"] as const,
+    detail: (id: string | number) => ["alerts", id] as const,
+  },
 };

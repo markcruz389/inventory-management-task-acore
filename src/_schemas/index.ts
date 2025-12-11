@@ -44,12 +44,29 @@ export const createTransferRequestSchema = z
     path: ["toWarehouseId"],
   });
 
+// Simplified Alert schema (calculated, not persisted)
+export const alertSchema = z.object({
+  productId: z.number().int().positive(),
+  stockStatus: z.enum(["critical", "low", "adequate", "overstocked"]),
+  currentStock: z.number().int().nonnegative(),
+  reorderPoint: z.number().int().nonnegative(),
+  recommendedQuantity: z.number().int().nonnegative(),
+});
+
+// Persisted dismissed alerts data
+export const dismissedAlertsSchema = z.object({
+  dismissedProductIds: z.array(z.number().int().positive()),
+});
+
 export const productsResponseSchema = z.array(productSchema);
 export const warehousesResponseSchema = z.array(warehouseSchema);
 export const stockResponseSchema = z.array(stockSchema);
 export const transfersResponseSchema = z.array(transferSchema);
+export const alertsResponseSchema = z.array(alertSchema);
 
 export type Product = z.infer<typeof productSchema>;
 export type Warehouse = z.infer<typeof warehouseSchema>;
 export type Stock = z.infer<typeof stockSchema>;
 export type Transfer = z.infer<typeof transferSchema>;
+export type Alert = z.infer<typeof alertSchema>;
+export type DismissedAlerts = z.infer<typeof dismissedAlertsSchema>;
